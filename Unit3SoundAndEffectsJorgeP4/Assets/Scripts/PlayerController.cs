@@ -12,6 +12,11 @@ public class PlayerController : MonoBehaviour
     private Animator playerAnim;
     public AudioClip jumpSound;
     public AudioClip crashSound;
+    public bool isOnGround = true;
+    public ParticleSystem dirtParticle;
+    public bool gameOver;
+    public ParticleSystem explosionParticle;
+    private AudioSource playerAudio;
 
 
 
@@ -22,18 +27,19 @@ public class PlayerController : MonoBehaviour
         playerRb = GetComponent<Rigidbody>();
         Physics.gravity *= gravityModifier;
         playerAnim = GetComponent<Animator>();
+        playerAudio = GetComponent<AudioSource>();
     }
 
 
 
 
-    public bool isOnGround = true;
-    public ParticleSystem dirtParticle; 
+    
 
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.Space) && isOnGround && !gameOver)
         {
+            playerAudio.PlayOneShot(jumpSound, 1.0f);
             dirtParticle.Stop();
 
             playerRb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
@@ -45,8 +51,7 @@ public class PlayerController : MonoBehaviour
         
     }
 
-    public bool gameOver = false;
-    public ParticleSystem explosionParticle;
+    
 
     private void OnCollisionEnter(Collision collision)
     {
@@ -57,6 +62,7 @@ public class PlayerController : MonoBehaviour
         }
         else if (collision.gameObject.CompareTag("Obstacle"))
         {
+            playerAudio.PlayOneShot(crashSound, 1.0f);
             explosionParticle.Play();
             dirtParticle.Stop();
         
